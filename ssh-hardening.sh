@@ -473,7 +473,7 @@ BANNER
   echo -e "${YELLOW}  保持打开状态，直到脚本完全结束。${RESET}"
   echo -e "${YELLOW}  如果误触了某些选项，您可能会被${RESET}"
   echo -e "${YELLOW}  永久锁在服务器之外，无法再登录！${RESET}"
-  echo -e "${YELLOW}  建议您现在开启一个额外的ssh窗口作为备用${RESET}"
+  echo -e "${RED}  建议您现在开启一个额外的ssh窗口作为备用${RESET}"
   echo -e "${YELLOW}  ──────────────────────────────────────────────────────${RESET}"
   echo ""
   echo -e "  ${BOLD}请输入 yes 以确认您已了解上述风险，并将全程保持至少一个 SSH 连接。${RESET}"
