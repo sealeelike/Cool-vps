@@ -7,6 +7,8 @@ set -euo pipefail
 #    阶段一：预检查
 #    阶段二：用户远程检查（启用公钥 → 导入密钥 → 远程验证）
 #    阶段三：修改防火墙（禁用密码 → fail2ban）
+#
+#  ⚠️  本脚本仅适用于 Debian / Ubuntu 系统（使用 apt-get）
 # ============================================================
 
 # ---------- 颜色 / 图标 ----------
@@ -174,8 +176,12 @@ CONF
 
   # 重启 SSH
   step "重启 SSH 服务..."
-  systemctl restart ssh 2>/dev/null || systemctl restart sshd 2>/dev/null || true
-  ok "SSH 服务已重启"
+  if systemctl restart ssh 2>/dev/null || systemctl restart sshd 2>/dev/null; then
+    ok "SSH 服务已重启"
+  else
+    fail "SSH 服务重启失败，请手动运行: systemctl restart ssh"
+    exit 1
+  fi
 
   # ---- 2-2 导入用户公钥 ----
   step "[2-2] 导入用户公钥..."
@@ -226,6 +232,7 @@ CONF
   echo ""
   local server_ip
   server_ip=$(hostname -I 2>/dev/null | awk '{print $1}') || true
+  info "检测到本机 IP: ${server_ip:-未知}（如有多个网卡，请确认使用可访问的外网 IP）"
   local current_user
   current_user=$(whoami)
 
@@ -298,8 +305,12 @@ phase_firewall() {
 
   # 重启 SSH
   step "重启 SSH 服务..."
-  systemctl restart ssh 2>/dev/null || systemctl restart sshd 2>/dev/null || true
-  ok "SSH 服务已重启（密码登录已禁用）"
+  if systemctl restart ssh 2>/dev/null || systemctl restart sshd 2>/dev/null; then
+    ok "SSH 服务已重启（密码登录已禁用）"
+  else
+    fail "SSH 服务重启失败，请手动运行: systemctl restart ssh"
+    exit 1
+  fi
 
   # ---- 3-2 安装配置 fail2ban ----
   step "[3-2] 安装 fail2ban..."
